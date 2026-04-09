@@ -73,10 +73,10 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
         );
+        schedule.checkPassword(request.getPassword());
         schedule.update(
                 request.getTitle(),
-                request.getAuthor(),
-                request.getPassword()
+                request.getAuthor()
         );
         return new  UpdateScheduleResponse(
                 schedule.getId(),
@@ -93,8 +93,7 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
         );
-        if (request.getPassword().equals(schedule.getPassword())) {
-            scheduleRepository.delete(schedule);
-        }
+        schedule.checkPassword(request.getPassword());
+        scheduleRepository.delete(schedule);
     }
 }
