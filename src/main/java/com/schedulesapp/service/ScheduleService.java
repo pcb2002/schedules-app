@@ -87,4 +87,14 @@ public class ScheduleService {
                 schedule.getUpdatedAt()
         );
     }
+
+    @Transactional
+    public void delete(Long scheduleId) {
+        boolean existence = scheduleRepository.existsById(scheduleId);
+        if (!existence) {
+            throw new IllegalArgumentException("Schedule with id " + scheduleId + " not found");
+        }
+
+        scheduleRepository.deleteById(scheduleId);
+    }
 }
