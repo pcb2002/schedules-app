@@ -1,8 +1,6 @@
 package com.schedulesapp.service;
 
-import com.schedulesapp.dto.CreateScheduleRequest;
-import com.schedulesapp.dto.CreateScheduleResponse;
-import com.schedulesapp.dto.GetScheduleResponse;
+import com.schedulesapp.dto.*;
 import com.schedulesapp.entity.Schedule;
 import com.schedulesapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +59,26 @@ public class ScheduleService {
                 () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
         );
         return new GetScheduleResponse(
+                schedule.getId(),
+                schedule.getTitle(),
+                schedule.getContent(),
+                schedule.getAuthor(),
+                schedule.getCreatedAt(),
+                schedule.getUpdatedAt()
+        );
+    }
+
+    @Transactional
+    public UpdateScheduleResponse update(Long scheduleId, UpdateScheduleRequest request) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
+        );
+        schedule.update(
+                request.getTitle(),
+                request.getAuthor(),
+                request.getPassword()
+        );
+        return new  UpdateScheduleResponse(
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),

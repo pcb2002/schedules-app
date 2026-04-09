@@ -26,10 +26,12 @@ public class Schedule extends BaseEntity{
         this.password = password;
     }
 
-    public void update(String title, String content, String author, String password) {
+    public void update(String title, String author, String inputPassword) {
+        if (!this.password.equals(inputPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
         this.title = title;
-        this.content = content;
         this.author = author;
-        this.password = password;
     }
 }
