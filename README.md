@@ -1,19 +1,11 @@
-[260410] 피드백1 (필수과제)
-- 주소 통일하는 함수? 쓰기
-- 커스텀 예외처리 써보기
-- 전체 목록 조회할 때 리스트로 바로 넘겨주지 않고 따로 처리
-- 함수 이름 update이런거 말고 더 자세하게 스케줄 붙여서
-- 엔티티, dto등에서 생성자, @이런거 왜 쓰는지 고민해보고 자세히 알고 쓰기
-- dto이름 이름-동작-리퀘스트/리스폰스 순서로 써보기
-- 
 # 📝 일정 관리 서비스 API 명세서
 
 ### Base URL
-- `http://localhost:8080/api`
+- `http://localhost:8080`
 
 ---
 
-## 📌 1. 일정(Schedule) API
+## 1. 일정(Schedule) API
 
 ### 1-1. 일정 생성 (Lv 1, Lv 7)
 새로운 일정을 등록합니다. 입력값 검증을 수행하며, 응답 시 비밀번호는 제외됩니다.
@@ -42,7 +34,7 @@
 - **Response (201 Created)**
 
 ```json
-// 응답 예시 (비밀번호 제외)
+// 응답 예시
 {
   "id": 1,
   "title": "스프링 과제하기",
@@ -50,6 +42,55 @@
   "author": "홍길동",
   "createdAt": "2026-04-09T15:44:00",
   "updatedAt": "2026-04-09T15:44:00"
+}
+```
+
+- **Response (400 Bad Request)**
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 제목은 필수 입력값입니다."
+  }
+```
+
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 제목은 최대 30자 이내여야 합니다."
+}
+```
+
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 내용은 필수 입력값입니다."
+}
+```
+
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 내용은 최대 200자 이내여야 합니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "작성자명은 필수 입력값입니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "비밀번호는 필수 입력값입니다."
 }
 ```
 
@@ -114,12 +155,23 @@
   "comments": [
     {
       "id": 1,
+      "scheduleId": 1,
       "content": "파이팅입니다!",
       "author": "김철수",
       "createdAt": "2026-04-09T13:10:00",
       "updatedAt": "2026-04-09T13:10:00"
     }
   ]
+}
+```
+
+- **Response (404 Not Found)**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "해당 일정을 찾을 수 없습니다."
 }
 ```
 
@@ -161,6 +213,60 @@
 }
 ```
 
+- **Response (400 Bad Request)**
+- 
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 제목은 필수 입력값입니다."
+  }
+```
+
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "일정 제목은 최대 30자 이내여야 합니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "작성자명은 필수 입력값입니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "비밀번호는 필수 입력값입니다."
+}
+```
+
+- **Response (401 Unauthorized)**
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "비밀번호가 일치하지 않습니다."
+}
+```
+
+- **Response (404 Not Found)**
+
+```json
+{
+  "status": 404,
+  "error": "Not Found",
+  "message": "해당 일정을 찾을 수 없습니다."
+}
+```
+
 ---
 
 ### 1-5. 선택 일정 삭제 (Lv 4)
@@ -182,16 +288,25 @@
 
 - **Response (204 No Content)**
     - 본문 없이 상태 코드 `204`만 반환 (성공적으로 삭제됨)
-    - 비밀번호 불일치 시 `401 Unauthorized` 또는 `403 Forbidden` 반환
+
+- **Response (401 Unauthorized)**
+
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "비밀번호가 일치하지 않습니다."
+}
+```
 
 ---
 
-## 💬 2. 댓글(Comment) API
+## 2. 댓글(Comment) API
 
 ### 2-1. 댓글 생성 (Lv 5, Lv 7)
 특정 일정에 댓글을 작성합니다. 한 일정당 최대 10개까지만 작성 가능합니다.
 
-- **URL:** `/schedules/{scheduleId}/comments`
+- **URL:** `/schedules/{scheduleId}`
 - **Method:** `POST`
 - **Path Variable**
     - `scheduleId` (Long) : 댓글을 달 일정의 고유 ID
@@ -226,25 +341,44 @@
 }
 ```
 
----
+- **Response (400 Bad Request)**
 
-### 🛡️ 에러 응답 공통 규격 (참고사항)
-입력값 검증(Validation) 실패 혹은 비밀번호 불일치 등 예외 발생 시 공통적인 에러 형태를 반환하도록 설계하면 좋습니다.
-
-**HTTP Status: 400 Bad Request (유효성 검사 실패 시)**
 ```json
 {
   "status": 400,
   "error": "Bad Request",
-  "message": "일정 제목은 30자 이내여야 합니다."
+  "message": "댓글은 최대 10개 입니다."
 }
 ```
 
-**HTTP Status: 401 Unauthorized (비밀번호 불일치 시)**
 ```json
 {
-  "status": 401,
-  "error": "Unauthorized",
-  "message": "비밀번호가 일치하지 않습니다."
+  "status": 400,
+  "error": "Bad Request",
+  "message": "댓글 내용은 필수 입력값입니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "댓글 내용은 최대 100자 이내여야 합니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "작성자명은 필수 입력값입니다."
+}
+```
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "비밀번호는 필수 입력값입니다."
 }
 ```
