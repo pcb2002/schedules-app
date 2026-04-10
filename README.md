@@ -1,4 +1,7 @@
-# 📝 일정 관리 서비스 API 명세서
+# ERD
+![img_1.png](img_1.png)
+
+# 일정 관리 서비스 API 명세서
 
 ### Base URL
 - `http://localhost:8080`
@@ -214,7 +217,7 @@
 ```
 
 - **Response (400 Bad Request)**
-- 
+
 ```json
   {
   "status": 400,
@@ -289,6 +292,16 @@
 - **Response (204 No Content)**
     - 본문 없이 상태 코드 `204`만 반환 (성공적으로 삭제됨)
 
+
+- **Response (400 Bad Request)**
+
+```json
+  {
+  "status": 400,
+  "error": "Bad Request",
+  "message": "비밀번호는 필수 입력값입니다."
+  }
+```
 - **Response (401 Unauthorized)**
 
 ```json
