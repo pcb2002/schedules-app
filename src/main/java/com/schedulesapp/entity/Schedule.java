@@ -1,5 +1,7 @@
 package com.schedulesapp.entity;
 
+import com.schedulesapp.exception.CustomException;
+import com.schedulesapp.exception.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,7 +35,7 @@ public class Schedule extends BaseEntity{
 
     public void checkPassword(String inputPassword) {
         if (!this.password.equals(inputPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 }

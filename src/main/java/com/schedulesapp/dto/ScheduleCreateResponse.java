@@ -3,9 +3,8 @@ package com.schedulesapp.dto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-
 @Getter
-public class GetScheduleResponse {
+public class ScheduleCreateResponse {
     private final Long id;
     private final String title;
     private final String content;
@@ -13,7 +12,7 @@ public class GetScheduleResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public GetScheduleResponse(Long id, String title, String content, String author, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ScheduleCreateResponse(Long id, String title, String content, String author, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.content = content;

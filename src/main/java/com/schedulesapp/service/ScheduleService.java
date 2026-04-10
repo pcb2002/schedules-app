@@ -2,6 +2,8 @@ package com.schedulesapp.service;
 
 import com.schedulesapp.dto.*;
 import com.schedulesapp.entity.Schedule;
+import com.schedulesapp.exception.CustomException;
+import com.schedulesapp.exception.ErrorCode;
 import com.schedulesapp.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public CreateScheduleResponse save(CreateScheduleRequest request) {
+    public ScheduleCreateResponse saveSchedule(ScheduleCreateRequest request) {
         Schedule schedule = new Schedule(
                 request.getTitle(),
                 request.getContent(),
@@ -24,7 +26,7 @@ public class ScheduleService {
                 request.getPassword()
         );
         Schedule saved = scheduleRepository.save(schedule);
-        return new CreateScheduleResponse(
+        return new ScheduleCreateResponse(
                 saved.getId(),
                 saved.getTitle(),
                 saved.getContent(),
@@ -35,12 +37,16 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetScheduleResponse> getAll() {
+    public ScheduleGetListResponse getAllSchedule() {
         List<Schedule> schedules = scheduleRepository.findAll();
-        List<GetScheduleResponse> dtos = new ArrayList<>();
+        List<ScheduleGetResponse> dtos = new ArrayList<>();
+
+//      List<ScheduleGetResponse> dtos = schedules.stream()
+//            .map(ScheduleGetResponse::new)
+//            .toList();
 
         for (Schedule schedule : schedules) {
-            GetScheduleResponse dto = new GetScheduleResponse(
+            ScheduleGetResponse dto = new ScheduleGetResponse(
                     schedule.getId(),
                     schedule.getTitle(),
                     schedule.getContent(),
@@ -50,15 +56,15 @@ public class ScheduleService {
             );
             dtos.add(dto);
         }
-        return dtos;
+        return new ScheduleGetListResponse(dtos);
     }
 
     @Transactional(readOnly = true)
-    public GetScheduleResponse getOne(Long scheduleId) {
+    public ScheduleGetResponse getOneSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
+                () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
-        return new GetScheduleResponse(
+        return new ScheduleGetResponse(
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
@@ -69,16 +75,16 @@ public class ScheduleService {
     }
 
     @Transactional
-    public UpdateScheduleResponse update(Long scheduleId, UpdateScheduleRequest request) {
+    public ScheduleUpdateResponse updateSchedule(Long scheduleId, ScheduleUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
+                () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
         schedule.checkPassword(request.getPassword());
         schedule.update(
                 request.getTitle(),
                 request.getAuthor()
         );
-        return new  UpdateScheduleResponse(
+        return new ScheduleUpdateResponse(
                 schedule.getId(),
                 schedule.getTitle(),
                 schedule.getContent(),
@@ -89,9 +95,9 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void delete(Long scheduleId, DeleteScheduleRequest request) {
+    public void deleteSchedule(Long scheduleId, ScheduleDeleteRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                () -> new IllegalArgumentException("Schedule with id " + scheduleId + " not found")
+                () -> new CustomException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
         schedule.checkPassword(request.getPassword());
         scheduleRepository.delete(schedule);

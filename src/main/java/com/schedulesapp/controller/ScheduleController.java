@@ -10,35 +10,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    @PostMapping("/schedules")
-    public ResponseEntity<CreateScheduleResponse> create(@RequestBody CreateScheduleRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(request));
+    @PostMapping
+    public ResponseEntity<ScheduleCreateResponse> create(@RequestBody ScheduleCreateRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.saveSchedule(request));
     }
 
-    @GetMapping("/schedules")
-    public ResponseEntity<List<GetScheduleResponse>> getAll() {
-        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAll());
+    @GetMapping
+    public ResponseEntity<ScheduleGetListResponse> getAll() {
+        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getAllSchedule());
     }
 
-    @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<GetScheduleResponse> getOne(@PathVariable Long scheduleId){
-        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOne(scheduleId));
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleGetResponse> getOne(@PathVariable Long scheduleId){
+        return  ResponseEntity.status(HttpStatus.OK).body(scheduleService.getOneSchedule(scheduleId));
     }
 
-    @PutMapping("/schedules/{scheduleId}")
-    public ResponseEntity<UpdateScheduleResponse> update(
-            @PathVariable Long scheduleId, @RequestBody UpdateScheduleRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.update(scheduleId, request));
+    @PutMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleUpdateResponse> update(
+            @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request){
+        return ResponseEntity.status(HttpStatus.OK).body(scheduleService.updateSchedule(scheduleId, request));
     }
 
-    @DeleteMapping("/schedules/{scheduleId}")
+    @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> delete(
-            @PathVariable Long scheduleId, @RequestBody DeleteScheduleRequest request){
-        scheduleService.delete(scheduleId, request);
+            @PathVariable Long scheduleId, @RequestBody ScheduleDeleteRequest request){
+        scheduleService.deleteSchedule(scheduleId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
